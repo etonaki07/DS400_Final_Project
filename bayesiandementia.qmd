@@ -1,0 +1,50 @@
+---
+title: "Bayesian dementia"
+authors: Faith & Elora
+format: html
+editor: visual
+---
+
+# Determining the strongest predictor variables and interactions for early onset dementia.
+
+#### This is the r markdown for importing our libraries, data set, cleaning and Bayesian modeling. The document is organized with 4 sections, data cleaning, visual EDA, Bayesian modeling/testing, and then comparison and conclusion.
+
+## 1. Libraries, dataset, and data cleaning.
+
+#### A. libraries
+
+```{r}
+library(tidyverse)
+library(bayesrules)
+library(rstanarm)
+library(bayesplot)
+library(readr)
+```
+
+#### B. Importing datasets and Defining variables
+
+Source of datasets: <https://sites.wustl.edu/oasisbrains/home/oasis-1/>
+
+```{r}
+data <- read_csv("merged_oasis_data.csv")
+data
+```
+
+MMSE (Mini-Mental State Examination):
+
+CDR (Clinical
+
+#### C. Data Cleaning
+
+```{r}
+oasis <- data %>% 
+select(Age, CDR, nWBV, 
+         MMSE) %>% 
+  na.omit()
+```
+
+## 2. Visual EDA/ exploring
+
+## 3. Bayesian modeling
+
+## 4. Comparison and conclusion

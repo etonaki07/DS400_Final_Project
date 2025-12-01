@@ -30,9 +30,15 @@ data <- read_csv("merged_oasis_data.csv")
 data
 ```
 
-MMSE (Mini-Mental State Examination):
+The variables we will be using are:
 
-CDR (Clinical
+-   Age: The age of different subjects with and without signs of dementia.
+
+-   MMSE (Mini-Mental State Examination): A measure used to account for variations in head size by normalizing brain volume using total intracranial volume (TIV).
+
+-   CDR (Clinical Dementia Rating): The CDR scale is used to stage the severity of dementia, with specific scores indicating different levels of cognitive and functional impairment. 0 = nondemented; 0.5 – very mild dementia; 1 = mild dementia; 2 = moderate dementia.  
+
+-   nWBV (Normalized Whole Brain Volume): A 30-point questionnaire used as a screening tool to assess cognitive impairment, measuring aspects like memory, orientation, attention, and language.
 
 #### C. Data Cleaning
 
@@ -41,6 +47,10 @@ oasis <- data %>%
 select(Age, CDR, nWBV, 
          MMSE) %>% 
   na.omit()
+```
+
+```{r}
+glimpse(oasis)
 ```
 
 ## 2. Visual EDA/ exploring

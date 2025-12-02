@@ -55,13 +55,13 @@ glimpse(oasis)
 
 ## 2. Visual EDA/ exploring
 
-#### These will just be some simple plots and charts to understand our variables of interest a little more before we get to modeling. It can also serve to help us make inferences before we get started. 
+#### These will just be some simple plots and charts to understand our variables of interest a little more before we get to modeling. It can also serve to help us make inferences before we get started.
 
 #### A. First I have to change the CDR values from numeric to categorical because theres only 4 different values 235 rows. Ill be able to visualize my data a lot better this way.
 
 ```{r}
-oasis$CDR <- as.factor(oasis$CDR,
-                       levels= c(0, 0.5, 1, 2)
+oasis$CDR <- factor(oasis$CDR,
+                       levels= c(0, 0.5, 1, 2),
                        labels= c("nondemented","slight dementia", "mild dementia", "moderate dementia"))
 ```
 
@@ -78,5 +78,9 @@ ggplot( data=oasis, aes(x=Age, y=CDR,  fill=nWBV)) +
 ```
 
 ## 3. Bayesian modeling
+
+```{r}
+
+```
 
 ## 4. Comparison and conclusion

@@ -43,10 +43,12 @@ The variables we will be using are:
 #### C. Data Cleaning
 
 ```{r}
-oasis <- data %>% 
-select(Age, CDR, nWBV, 
-         MMSE) %>% 
-  na.omit()
+oasis <- data %>%
+  select(Age, CDR, nWBV, MMSE) %>%
+  na.omit() %>%
+  mutate(
+    dementia = ifelse(CDR == 0, 0, 1)  
+  )
 ```
 
 ```{r}
@@ -60,9 +62,9 @@ glimpse(oasis)
 #### A. First I have to change the CDR values from numeric to categorical because theres only 4 different values 235 rows. Ill be able to visualize my data a lot better this way.
 
 ```{r}
-oasis$CDR <- factor(oasis$CDR,
-                       levels= c(0, 0.5, 1, 2),
-                       labels= c("nondemented","slight dementia", "mild dementia", "moderate dementia"))
+oasis$dementia <- factor(oasis$dementia,
+                       levels= c(0,1),
+                       labels= c("nondemented", "demented"))
 ```
 
 #### B. Now I can make some visualizations

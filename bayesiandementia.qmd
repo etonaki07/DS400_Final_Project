@@ -88,6 +88,11 @@ ggplot( data=oasis, aes(x=dementia, y=nWBV, fill=dementia)) +
   geom_violin(alpha=0.4)+ geom_boxplot(width=0.2)
 ```
 
+```{r}
+ggplot(oasis, aes(x = dementia, fill = sex)) +
+  geom_bar()
+```
+
 ## 3. Bayesian modeling
 
 ```{r}

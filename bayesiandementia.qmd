@@ -77,6 +77,11 @@ ggplot( data=oasis, aes(x=Age, y=CDR,  fill=nWBV)) +
   geom_violin(alpha=0.4)+ geom_boxplot(width=0.2)
 ```
 
+```{r}
+ggplot( data=oasis, aes(x=CDR, y=nWBV)) +
+  geom_boxplot()
+```
+
 ## 3. Bayesian modeling
 
 ```{r}

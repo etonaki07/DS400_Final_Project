@@ -44,7 +44,7 @@ The variables we will be using are:
 
 ```{r}
 oasis <- data %>%
-  select(Age, CDR, nWBV, MMSE) %>%
+  select("Age", "M/F", "CDR", "nWBV", "MMSE") %>%
   na.omit() %>%
   mutate(
     dementia = ifelse(CDR == 0, 0, 1)  
@@ -64,24 +64,28 @@ glimpse(oasis)
 ```{r}
 oasis$dementia <- factor(oasis$dementia,
                        levels= c(0,1),
-                       labels= c("nondemented", "demented"))
+                       labels= c("<=0.5", "0.5<"))
+oasis <- oasis %>% 
+  rename('sex' = 'M/F')
 ```
 
 #### B. Now I can make some visualizations
 
 ```{r}
-ggplot( data=oasis, aes(x=CDR, y=Age)) +
-  geom_violin()
-```
-
-```{r}
-ggplot( data=oasis, aes(x=Age, y=CDR,  fill=nWBV)) +
-  geom_violin(alpha=0.4)+ geom_boxplot(width=0.2)
-```
-
-```{r}
-ggplot( data=oasis, aes(x=CDR, y=nWBV)) +
+ggplot( data=oasis, aes(x=dementia, y=MMSE, fill=dementia)) +
   geom_boxplot()
+```
+
+```{r}
+ggplot( data=oasis, aes(x=nWBV, y=Age, color=dementia)) +
+ geom_point() +
+  geom_smooth() +
+  stat_cor()
+```
+
+```{r}
+ggplot( data=oasis, aes(x=dementia, y=nWBV, fill=dementia)) +
+  geom_violin(alpha=0.4)+ geom_boxplot(width=0.2)
 ```
 
 ## 3. Bayesian modeling

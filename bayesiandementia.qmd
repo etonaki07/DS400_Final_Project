@@ -65,7 +65,7 @@ glimpse(oasis)
 ```{r}
 oasis$dementia <- factor(oasis$dementia,
                        levels= c(0,1),
-                       labels= c("<=0.5", "0.5<"))
+                       labels= c("<0.5", ">=0.5"))
 oasis <- oasis %>% 
   rename('sex' = 'M/F')
 ```
@@ -105,7 +105,7 @@ oasis_model <- oasis %>%
   )
 ```
 
-#### A. Priors 
+#### A. Priors
 
 ```{r}
 ##chart to show distribution of dementia
@@ -117,7 +117,7 @@ ggplot(oasis_model, aes(x = dementia)) +
 
 **Prior slope**: For my slope prior, I have little belief and prior knowledge about what to expect, so I am keeping it weak, 0,1.
 
-#### B. Model 1: Age + MMSE 
+#### B. Model 1: Age + MMSE
 
 ```{r}
 # Model 1: Age + MMSE
@@ -171,4 +171,68 @@ model3 <- stan_glm(
 model3
 ```
 
+**Summaries of models\
+**
+
+```{r}
+summary(model1)
+```
+
+**Model 1:** This model includes `Age` and `MMSE` as predictors of dementia. The estimated coefficients are very small and stable, with minimal uncertainty (standard deviations close to 0 for Age and 0.2 for MMSE). The intercept is 6.6 with a standard deviation of 6.2.
+
+```{r}
+summary(model2)
+```
+
+**Model 2:** This model adds `nWBV` as a predictor alongside Age and MMSE. The coefficient for nWBV has a median of -0.6 but a very large standard deviation of 14.7, indicating high uncertainty in its effect. Age and MMSE remain small and stable. The intercept increases slightly to 7.3 (sd 13.1). Overall, adding nWBV introduces more uncertainty into the model coefficients.
+
+```{r}
+summary(model3)
+```
+
+**Model 3:** This model further adds `sex` as a predictor in addition to Age, MMSE, and nWBV. The coefficient for sex (`sexM`) is small (0.1) with moderate uncertainty (sd 1.3). The nWBV coefficient remains highly uncertain (median -0.8, sd 14.6). Age and MMSE coefficients are stable as before. The intercept is 7.5 (sd 13.1). Adding sex does not substantially improve the model but slightly increases the number of parameters.
+
 ## 4. Comparison and conclusion
+
+**Posterior Predictive Simulation:** We used posterior predictive simulation because the default posterior predictive check (`pp_check()`) for binary outcomes only compares 0/1 predictions and could not reveal meaningful differences between the models. Posterior predictive simulations instead show how each model changes the predicted probability of dementia, providing a clearer and more sensitive comparison of predictor importance and model behavior.
+
+```{r}
+nWBV_pred1 <- posterior_linpred(model2, newdata = oasis_model, transform = TRUE)
+nWBV_pred2 <- posterior_linpred(model2, newdata = mutate(oasis_model, nWBV = mean(nWBV)), transform = TRUE)
+
+nWBV_impact <- apply(pred1, 2, mean) - apply(pred2, 2, mean)
+mean(abs(impact))
+```
+
+```{r}
+MMSE_pred1 <- posterior_linpred(model2, newdata = oasis_model, transform = TRUE)
+MMSE_pred2 <- posterior_linpred(model2, newdata = mutate(oasis_model, MMSE = mean(MMSE)), transform = TRUE)
+
+MMSE_impact <- apply(pred1, 2, mean) - apply(pred2, 2, mean)
+mean(abs(impact))
+```
+
+| Variable | Impact (avg change in predicted probability) |
+|----------|----------------------------------------------|
+| nWBV     | 0.000801 (\~0.08%)                           |
+| MMSE     | 0.000967 (\~0.097%)                          |
+
+Posterior predictive simulations show that MMSE changes the predicted probability of dementia by only \~0.1%.
+
+```{r}
+pred_probs1 <- apply(posterior_linpred(model1, transform = TRUE), 2, mean)
+pred_probs2 <- apply(posterior_linpred(model2, transform = TRUE), 2, mean)
+pred_probs3 <- apply(posterior_linpred(model3, transform = TRUE), 2, mean
+```
+
+**All 3 models:** The x-axis represents the predicted probability of dementia (0 = no dementia, 1 = dementia), and the y-axis represents the density of subjects at each predicted probability. Higher density values indicate that more subjects have predicted probabilities near that x-value. Model 1 has a taller desity peak showing that the model predicts very similar probabilities for most subjects. This suggests that there is less variation in predicted dementia risk. Lower, wider peaks in Models 2 and 3 would showthat adding predictors like nWBV and sex increases differentiation between subjects, although in this case the effect appears minimal.
+
+```{r}
+plot(density(pred_probs1), col = "red", lwd = 2, xlab = "Predicted Probability", ylab = "Density")
+lines(density(pred_probs2), col = "blue", lwd = 2)
+lines(density(pred_probs3), col = "green", lwd = 2)
+
+legend("topleft", legend = c("Model1", "Model2", "Model3"), col = c("red", "blue", "green"), lwd = 2)
+```
+
+When comparing all three models, posterior predictive simulations revealed nearly identical predicted probability distributions, confirming that adding nWBV or sex did not meaningfully change the model’s predictive behavior\

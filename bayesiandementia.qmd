@@ -7,7 +7,7 @@ editor: visual
 
 # Determining the strongest predictor variables and interactions for early onset dementia.
 
-#### This is the r markdown for importing our libraries, data set, cleaning and Bayesian modeling. The document is organized with 4 sections, data cleaning, visual EDA, Bayesian modeling/testing, and then comparison and conclusion.
+#### This is the for importing our libraries, data set, cleaning and Bayesian modeling. The document is organized with 4 sections, data cleaning, visual EDA, Bayesian modeling/testing, and then comparison and conclusion.
 
 ## 1. Libraries, dataset, and data cleaning.
 
@@ -19,6 +19,7 @@ library(bayesrules)
 library(rstanarm)
 library(bayesplot)
 library(readr)
+library(ggpubr)
 ```
 
 #### B. Importing datasets and Defining variables
@@ -95,8 +96,79 @@ ggplot(oasis, aes(x = dementia, fill = sex)) +
 
 ## 3. Bayesian modeling
 
-```{r}
+#### Before modeling, we need to convert dementia back to numeric (0/1) for logistic regression
 
+```{r}
+oasis_model <- oasis %>%
+  mutate(
+    dementia_numeric = ifelse(dementia == "<=0.5", 0, 1)
+  )
+```
+
+#### A. Priors 
+
+```{r}
+##chart to show distribution of dementia
+ggplot(oasis_model, aes(x = dementia)) +
+  geom_bar()
+```
+
+**Prior Intercept:** To get the best results, I am changing the prior intercept to 0, 1.65, since our data is between 1/2 -2/3 0 ( 0.5\<.)
+
+**Prior slope**: For my slope prior, I have little belief and prior knowledge about what to expect, so I am keeping it weak, 0,1.
+
+#### B. Model 1: Age + MMSE 
+
+```{r}
+# Model 1: Age + MMSE
+model1 <- stan_glm(
+  dementia_numeric ~ Age + MMSE,
+  data = oasis_model,
+  family = binomial,
+  prior_intercept = normal(0, 1.65),
+  prior = normal(0, 1, autoscale = TRUE),
+  chains = 4,
+  iter = 5000*2,
+  seed = 84735
+)
+
+model1
+```
+
+#### C. Model 2: Age + MMSE + nWBV (Adding Brain Volume)
+
+```{r}
+# Model 2: Age + MMSE + nWBV
+model2 <- stan_glm(
+  dementia_numeric ~ Age + MMSE + nWBV,
+  data = oasis_model,
+  family = binomial,
+  prior_intercept = normal(0, 1.65),
+  prior = normal(0, 1, autoscale = TRUE),
+  chains = 4,
+  iter = 5000*2,
+  seed = 84735
+)
+
+# Summary
+model2
+```
+
+#### D. Model 3: Full Model (Age + MMSE + nWBV + Sex)
+
+```{r}
+model3 <- stan_glm(
+  dementia_numeric ~ Age + MMSE + nWBV + sex,
+  data = oasis_model,
+  family = binomial,
+  prior_intercept = normal(0, 1.65),
+  prior = normal(0, 1, autoscale = TRUE),
+  chains = 4,
+  iter = 5000*2,
+  seed = 84735
+)
+
+model3
 ```
 
 ## 4. Comparison and conclusion

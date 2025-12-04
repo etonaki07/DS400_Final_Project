@@ -200,7 +200,7 @@ summary(model3)
 nWBV_pred1 <- posterior_linpred(model2, newdata = oasis_model, transform = TRUE)
 nWBV_pred2 <- posterior_linpred(model2, newdata = mutate(oasis_model, nWBV = mean(nWBV)), transform = TRUE)
 
-nWBV_impact <- apply(pred1, 2, mean) - apply(pred2, 2, mean)
+nWBV_impact <- apply(nWBV_pred1, 2, mean) - apply(nWBV_pred2, 2, mean)
 mean(abs(impact))
 ```
 
@@ -208,7 +208,7 @@ mean(abs(impact))
 MMSE_pred1 <- posterior_linpred(model2, newdata = oasis_model, transform = TRUE)
 MMSE_pred2 <- posterior_linpred(model2, newdata = mutate(oasis_model, MMSE = mean(MMSE)), transform = TRUE)
 
-MMSE_impact <- apply(pred1, 2, mean) - apply(pred2, 2, mean)
+MMSE_impact <- apply(MMSE_pred1, 2, mean) - apply(MMSE_pred2, 2, mean)
 mean(abs(impact))
 ```
 
@@ -225,7 +225,7 @@ pred_probs2 <- apply(posterior_linpred(model2, transform = TRUE), 2, mean)
 pred_probs3 <- apply(posterior_linpred(model3, transform = TRUE), 2, mean
 ```
 
-**All 3 models:** The x-axis represents the predicted probability of dementia (0 = no dementia, 1 = dementia), and the y-axis represents the density of subjects at each predicted probability. Higher density values indicate that more subjects have predicted probabilities near that x-value. Model 1 has a taller desity peak showing that the model predicts very similar probabilities for most subjects. This suggests that there is less variation in predicted dementia risk. Lower, wider peaks in Models 2 and 3 would showthat adding predictors like nWBV and sex increases differentiation between subjects, although in this case the effect appears minimal.
+**All 3 models:** The x-axis represents the predicted probability of dementia (0 = no dementia, 1 = dementia), and the y-axis represents the density of subjects at each predicted probability. Higher density values indicate that more subjects have predicted probabilities near that x-value.
 
 ```{r}
 plot(density(pred_probs1), col = "red", lwd = 2, xlab = "Predicted Probability", ylab = "Density")
@@ -235,4 +235,8 @@ lines(density(pred_probs3), col = "green", lwd = 2)
 legend("topleft", legend = c("Model1", "Model2", "Model3"), col = c("red", "blue", "green"), lwd = 2)
 ```
 
-When comparing all three models, posterior predictive simulations revealed nearly identical predicted probability distributions, confirming that adding nWBV or sex did not meaningfully change the model’s predictive behavior\
+Model 1 has a taller desity peak showing that the model predicts very similar probabilities for most subjects. This suggests that there is less variation in predicted dementia risk. Lower, wider peaks in Models 2 and 3 would show that adding predictors like nWBV and sex increases differentiation between subjects, although in this case the effect appears minimal. When comparing all three models, posterior predictive simulations revealed nearly identical predicted probability distributions, confirming that adding nWBV or sex did not meaningfully change the model’s predictive behavior
+
+In conclusion, the Bayesian analysis showed that Age and MMSE are the only predictors that consistently matter for identifying dementia in this dataset. Even though we tried adding extra variables like nWBV and sex, the models couldn’t find clear or reliable effects from them. Their coefficients had a lot of uncertainty, and the posterior predictive simulations showed that they barely changed the predicted probability of dementia at all. The posterior predictive density plots backed this up since all three models produced almost the same pattern of predicted probabilities. This means the extra predictors didn’t improve anything in terms of prediction.
+
+Because of this, **Model 1 (Age + MMSE)** turned out to be the strongest and most practical model. It’s simple, easier to interpret, and performs just as well as the more complicated versions. Overall, the Bayesian workflow showed that there really isn’t much additional predictive signal in this dataset beyond Age and MMSE, and adding more predictors doesn’t give you any meaningful benefit. This highlights how important it is to look not just at statistical significance, but also at uncertainty and real-world predictive impact when choosing a model.

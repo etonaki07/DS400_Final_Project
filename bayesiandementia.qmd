@@ -201,7 +201,7 @@ nWBV_pred1 <- posterior_linpred(model2, newdata = oasis_model, transform = TRUE)
 nWBV_pred2 <- posterior_linpred(model2, newdata = mutate(oasis_model, nWBV = mean(nWBV)), transform = TRUE)
 
 nWBV_impact <- apply(nWBV_pred1, 2, mean) - apply(nWBV_pred2, 2, mean)
-mean(abs(impact))
+mean(abs(nWBV_impact))
 ```
 
 ```{r}
@@ -209,7 +209,7 @@ MMSE_pred1 <- posterior_linpred(model2, newdata = oasis_model, transform = TRUE)
 MMSE_pred2 <- posterior_linpred(model2, newdata = mutate(oasis_model, MMSE = mean(MMSE)), transform = TRUE)
 
 MMSE_impact <- apply(MMSE_pred1, 2, mean) - apply(MMSE_pred2, 2, mean)
-mean(abs(impact))
+mean(abs(MMSE_impact))
 ```
 
 | Variable | Impact (avg change in predicted probability) |
@@ -222,7 +222,7 @@ Posterior predictive simulations show that MMSE changes the predicted probabilit
 ```{r}
 pred_probs1 <- apply(posterior_linpred(model1, transform = TRUE), 2, mean)
 pred_probs2 <- apply(posterior_linpred(model2, transform = TRUE), 2, mean)
-pred_probs3 <- apply(posterior_linpred(model3, transform = TRUE), 2, mean
+pred_probs3 <- apply(posterior_linpred(model3, transform = TRUE), 2, mean)
 ```
 
 **All 3 models:** The x-axis represents the predicted probability of dementia (0 = no dementia, 1 = dementia), and the y-axis represents the density of subjects at each predicted probability. Higher density values indicate that more subjects have predicted probabilities near that x-value.
